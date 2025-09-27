@@ -1,7 +1,14 @@
 import pydot, os, sys
 import numpy as np
 
-def h(graph, is_digraph):
+# Constants
+GRAPH = "graph"
+DIGRAPH = "digraph"
+
+# Functions related to adjacency list and matrix
+def get_adjacency_matrix(graph):
+    is_digraph = graph.get_type() == DIGRAPH
+
     matrix = np.zeros((len(graph.nodes), len(graph.nodes)), dtype=int)
 
     for (a, b) in graph.edges:
@@ -14,11 +21,19 @@ def h(graph, is_digraph):
 
     return matrix
 
-# Constantes
-GRAPH = "graph"
-DIGRAPH = "digraph"
+def get_adjacency_list(graph):
+    is_digraph = graph.get_type() == DIGRAPH
 
-# Lidando com leitura de arquivos
+    list = [[graph.nodes[iterator]] for iterator in range(len(graph.nodes))]
+
+    for (a, b) in graph.edges:
+        list[graph.nodes.index(a)].append(b)
+        if (not is_digraph):
+            list[graph.nodes.index(b)].append(a)
+
+    return list
+
+# Handling file input and ARGV
 dir = os.path.dirname(__file__)
 
 if (len(sys.argv) >= 2):
@@ -43,7 +58,7 @@ graph = graphs[0]
 # Extract nodes and edges
 edges = [(e.get_source(), e.get_destination()) for e in graph.get_edges()]
 
-# criando lista de nodes
+# Building node list
 nodes = set()
 
 for (a, b) in edges:
@@ -53,7 +68,9 @@ for (a, b) in edges:
 graph.nodes = sorted(nodes)
 graph.edges = edges
 
-# Switch case
-adjacency_matrix = h(graph, graph.get_type() == DIGRAPH)
+# Setting data to work with BFS and DFS
+adjacency_matrix = get_adjacency_matrix(graph)
+adjacency_list = get_adjacency_list(graph)
 
 print(adjacency_matrix)
+print(adjacency_list)
