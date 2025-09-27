@@ -72,5 +72,5 @@ graph.edges = edges
 adjacency_matrix = get_adjacency_matrix(graph)
 adjacency_list = get_adjacency_list(graph)
 
-print(adjacency_matrix)
-print(adjacency_list)
+print("Matriz de adjacência: \n", adjacency_matrix)
+print("\nLista de adjacência: \n", adjacency_list)
