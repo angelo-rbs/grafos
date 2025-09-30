@@ -1,76 +1,40 @@
-import pydot, os, sys
-import numpy as np
+import os, sys
+from graph_utils import load_graph_from_file, get_adjacency_matrix, get_adjacency_list
+from algorithms import bfs, dfs
 
-# Constants
-GRAPH = "graph"
-DIGRAPH = "digraph"
-
-# Functions related to adjacency list and matrix
-def get_adjacency_matrix(graph):
-    is_digraph = graph.get_type() == DIGRAPH
-
-    matrix = np.zeros((len(graph.nodes), len(graph.nodes)), dtype=int)
-
-    for (a, b) in graph.edges:
-        row_index = graph.nodes.index(a)
-        col_index = graph.nodes.index(b)
-        matrix[row_index][col_index] = 1
-
-        if (is_digraph):
-            matrix[col_index][row_index] = -1
-
-    return matrix
-
-def get_adjacency_list(graph):
-    is_digraph = graph.get_type() == DIGRAPH
-
-    list = [[graph.nodes[iterator]] for iterator in range(len(graph.nodes))]
-
-    for (a, b) in graph.edges:
-        list[graph.nodes.index(a)].append(b)
-        if (not is_digraph):
-            list[graph.nodes.index(b)].append(a)
-
-    return list
-
-# Handling file input and ARGV
+# === Entrada do arquivo ===
 dir = os.path.dirname(__file__)
 
-if (len(sys.argv) >= 2):
+if len(sys.argv) >= 2:
     file_name = sys.argv[1]
 else:
-    file_name = input("Escreva o nome do arquivo, com a extensão: ")
+    file_name = input("Escreva o nome do arquivo .gv (ex: graph1.gv): ")
 
-file_path = dir + "\\data\\" + file_name
+file_path = os.path.join(dir, "data", file_name)
 
-if (not os.path.exists(file_path)):
+if not os.path.exists(file_path):
     print("O arquivo não existe na pasta 'data'!")
     sys.exit()
 
-file = open(file_path)
-dot_str = file.read()
-file.close() 
+# === Carregando o grafo ===
+graph = load_graph_from_file(file_path)
 
-# Parse DOT string
-graphs = pydot.graph_from_dot_data(dot_str)
-graph = graphs[0]
-
-# Extract nodes and edges
-edges = [(e.get_source(), e.get_destination()) for e in graph.get_edges()]
-
-# Building node list
-nodes = set()
-
-for (a, b) in edges:
-    nodes.add(a)
-    nodes.add(b)
-
-graph.nodes = sorted(nodes)
-graph.edges = edges
-
-# Setting data to work with BFS and DFS
+# === Representações ===
 adjacency_matrix = get_adjacency_matrix(graph)
 adjacency_list = get_adjacency_list(graph)
 
-print("Matriz de adjacência: \n", adjacency_matrix)
-print("\nLista de adjacência: \n", adjacency_list)
+print(f"\n Arquivo carregado: {file_name}")
+print(f" Tipo do grafo: {graph.get_type()}")
+print(f" Nós: {graph.nodes}")
+print(f" Arestas: {graph.edges}")
+
+print("\nMatriz de adjacência:\n", adjacency_matrix)
+print("\nLista de adjacência:")
+for k, v in adjacency_list.items():
+    print(f" {k}: {v}")
+
+# === Execução de algoritmos ===
+if graph.nodes:
+    start_node = graph.nodes[0]  # pega o 1º nó ordenado
+    print(f"\n BFS a partir de {start_node}: {bfs(adjacency_list, start_node)}")
+    print(f" DFS a partir de {start_node}: {dfs(adjacency_list, start_node)}")
