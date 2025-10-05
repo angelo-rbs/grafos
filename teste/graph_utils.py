@@ -4,6 +4,7 @@ import pydot
 GRAPH = "graph"
 DIGRAPH = "digraph"
 
+
 def load_graph_from_file(file_path: str):
     """Carrega o grafo a partir de um arquivo DOT."""
     with open(file_path, "r", encoding="utf-8") as f:
@@ -22,6 +23,7 @@ def load_graph_from_file(file_path: str):
     graph.edges = edges
     return graph
 
+
 def get_adjacency_matrix(graph):
     """Retorna a matriz de adjacência do grafo."""
     is_digraph = graph.get_type() == DIGRAPH
@@ -34,6 +36,7 @@ def get_adjacency_matrix(graph):
         if not is_digraph:
             matrix[col][row] = 1
     return matrix
+
 
 def get_adjacency_list(graph):
     """Retorna a lista de adjacência do grafo."""
